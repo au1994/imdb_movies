@@ -43,7 +43,7 @@ for f in $path/*
   done
 
 #Sort the output according to first column 
-sort -k1 -n $OUT;
+sort -k1 -rn $OUT;
 
 #Delete the unwanted file
 rm $OUT
