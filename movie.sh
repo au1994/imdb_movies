@@ -37,8 +37,16 @@ do
     search=$(echo $movie_name | tr ._' ' +)
      
     #Curl the api to get the json data
-    rating=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.imdbRating');
-    title=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.Title');
+    data=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search)
+    rating=$(echo $data | jq -r '.imdbRating');
+    title=$(echo $data | jq -r '.Title');
+   
+    #Check if Title is then put error message in title
+    if [ "$title" == "$NULL" ]
+    then
+        title=$(echo $data | jq -r '.Error');
+    fi
+
 
     #check if rating is null (if curl fails)
     if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
