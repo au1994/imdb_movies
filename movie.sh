@@ -1,4 +1,8 @@
 #!/bin/bash
+function printline()
+{
+   printf "%-10s  %-30s  %-30s\n" "$1" "$2" "$3";
+}
 #Get command line argument
 if [ -z $1 ];
 then 
@@ -21,7 +25,8 @@ declare -r ZERO="0";
 
 
 #Print the heading first
-printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
+#printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
+printline "RATING" "MOVIE" "TITLE";
 
 for f in $path/*
   do
@@ -37,10 +42,10 @@ for f in $path/*
 
      #check if rating is null (if curl fails)
      if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
-     then 
-	printf "%-10s  %-30s  %-30s\n" "$NA" "$movie_name" "$title";
+     then
+	printline "$NA" "$movie_name" "$title"; 
      else 
-	printf "%-10s  %-30s  %-30s\n" "$rating" "$movie_name" "$title";
+	printline "$rating" "$movie_name" "$title"
      fi
   done | sort -k1 -rn
 
