@@ -1,8 +1,9 @@
 #!/bin/bash
 function printline()
 {
-   printf "%-10s  %-30s  %-30s\n" "$1" "$2" "$3";
+    printf "%-10s  %-30s  %-30s\n" "$1" "$2" "$3";
 }
+
 #Get command line argument
 if [ -z $1 ];
 then 
@@ -25,29 +26,27 @@ declare -r ZERO="0";
 
 
 #Print the heading first
-#printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
 printline "RATING" "MOVIE" "TITLE";
 
 for f in $dir/*
-  do
-     #strip initial path value to get the movie name
-     movie_name=${f##*/}
+do
+    #strip initial path value to get the movie name
+    movie_name=${f##*/}
 
-     #Replace any dot, underscore or space with '+'
-     search=$(echo $movie_name | tr ._' ' +)
+    #Replace any dot, underscore or space with '+'
+    search=$(echo $movie_name | tr ._' ' +)
      
-     #Curl the api to get the json data
-     rating=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.imdbRating');
-     title=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.Title');
+    #Curl the api to get the json data
+    rating=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.imdbRating');
+    title=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.Title');
 
-     #check if rating is null (if curl fails)
-     if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
-     then
-	printline "$NA" "$movie_name" "$title"; 
-     else 
-	printline "$rating" "$movie_name" "$title"
-     fi
-  done | sort -k1 -rn
-
+    #check if rating is null (if curl fails)
+    if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
+    then
+        printline "$NA" "$movie_name" "$title"; 
+    else 
+        printline "$rating" "$movie_name" "$title"
+    fi
+done | sort -k1 -rn
 
 exit 0;
