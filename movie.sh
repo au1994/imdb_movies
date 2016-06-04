@@ -12,23 +12,13 @@ fi
 #Get absolute path from the input directory
 path=$(find ~/ -name $dir)
 
-#Make a new file in tmp folder
-touch /tmp/sorted.txt || {
-	 echo "Failed to create temp file";
-	 exit 1;
-	 }
-
-
 
 #Declaration of readonly constants
-declare -r OUT="/tmp/sorted.txt"
 declare -r NA="N/A";
 declare -r NULL="null";
 declare -r EMPTY="";
 declare -r ZERO="0"; 
 
-#Empty the output file
-> $OUT
 
 #Print the heading first
 printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
@@ -48,15 +38,11 @@ for f in $path/*
      #check if rating is null (if curl fails)
      if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
      then 
-	printf "%-10s  %-30s  %-30s\n" "$NA" "$movie_name" "$title" >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$NA" "$movie_name" "$title";
      else 
-	printf "%-10s  %-30s  %-30s\n" "$rating" "$movie_name" "$title" >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$rating" "$movie_name" "$title";
      fi
-  done
+  done | sort -k1 -rn
 
-#Sort the output according to first column 
-sort -k1 -rn $OUT;
 
-#Remove output file
-rm $OUT
 exit 0;
