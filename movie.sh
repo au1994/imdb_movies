@@ -1,8 +1,15 @@
 #!/bin/bash
 #Scan input directory from terminal
 
-echo 'enter the directory in which movies are residing'
-read dir
+
+if [ -z $1 ];
+then 
+    echo 'Directory not provided. Searching in current directory'
+    dir='.'
+else 
+    echo 'Directory is' $1
+    dir=$1
+fi
 
 #Get absolute path from the input directory
 path=$(find ~/ -name $dir)
@@ -21,6 +28,8 @@ NULL="null";
 EMPTY="";
 ZERO="0"; 
 
+#Print the heading first
+printf "%-10s  %-20s  %-20s\n" "RATING" "MOVIE" "TITLE"
 
 for f in $path/*
   do
@@ -32,13 +41,14 @@ for f in $path/*
      
      #Curl the api to get the json data
      rating=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.imdbRating');
-     
+     title=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.Title');
+
      #check if rating is null (if curl fails)
      if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
      then 
-	echo $NA $SPACE $movie_name >> $OUT;
+	printf "%-10s  %-20s  %-20s\n" "$NA" "$movie_name" "$title" >> $OUT;
      else 
-	echo $rating $SPACE $movie_name >> $OUT;
+	printf "%-10s  %-20s  %-20s\n" "$rating" "$movie_name" "$title" >> $OUT;
      fi
   done
 
