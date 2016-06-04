@@ -8,14 +8,14 @@ if [ -z $1 ];
 then 
     echo 'Directory not provided. Searching in current directory'
     dir='.'
+elif [ ! -d $1 ]
+then 
+    echo $1 'Directory does not exists'
+    exit 1;
 else 
-    echo 'Input Directory is' $1
-    dir=$1
+    echo 'Input Directory is ' $1;
+    dir=$1;
 fi
-
-#Get absolute path from the input directory
-path=$(find ~/ -name $dir)
-
 
 #Declaration of readonly constants
 declare -r NA="N/A";
@@ -28,7 +28,7 @@ declare -r ZERO="0";
 #printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
 printline "RATING" "MOVIE" "TITLE";
 
-for f in $path/*
+for f in $dir/*
   do
      #strip initial path value to get the movie name
      movie_name=${f##*/}
