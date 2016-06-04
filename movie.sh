@@ -1,26 +1,37 @@
 #!/bin/bash
-#Scan input directory from terminal
-
-echo 'enter the directory in which movies are residing'
-read dir
+#Get command line argument
+if [ -z $1 ];
+then 
+    echo 'Directory not provided. Searching in current directory'
+    dir='.'
+else 
+    echo 'Input Directory is' $1
+    dir=$1
+fi
 
 #Get absolute path from the input directory
 path=$(find ~/ -name $dir)
 
 #Make a new file in tmp folder
-touch /tmp/sorted.txt || { echo "Failed to create temp file"; exit 1; }
+touch /tmp/sorted.txt || {
+	 echo "Failed to create temp file";
+	 exit 1;
+	 }
 
-#Empty the sorted folder
-> /tmp/sorted.txt
 
-#Declaration of variables
-OUT="/tmp/sorted.txt"
-SPACE="   ";
-NA="NA";
-NULL="null";
-EMPTY="";
-ZERO="0"; 
 
+#Declaration of readonly constants
+declare -r OUT="/tmp/sorted.txt"
+declare -r NA="N/A";
+declare -r NULL="null";
+declare -r EMPTY="";
+declare -r ZERO="0"; 
+
+#Empty the output file
+> $OUT
+
+#Print the heading first
+printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
 
 for f in $path/*
   do
@@ -32,19 +43,20 @@ for f in $path/*
      
      #Curl the api to get the json data
      rating=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.imdbRating');
-     
+     title=$(curl -s http://www.omdbapi.com/\?i\=\&t\=$search | jq -r '.Title');
+
      #check if rating is null (if curl fails)
      if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
      then 
-	echo $NA $SPACE $movie_name >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$NA" "$movie_name" "$title" >> $OUT;
      else 
-	echo $rating $SPACE $movie_name >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$rating" "$movie_name" "$title" >> $OUT;
      fi
   done
 
 #Sort the output according to first column 
 sort -k1 -rn $OUT;
 
-#Delete the unwanted file
+#Remove output file
 rm $OUT
 exit 0;
