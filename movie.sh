@@ -1,13 +1,11 @@
 #!/bin/bash
-#Scan input directory from terminal
-
-
+#Get command line argument
 if [ -z $1 ];
 then 
     echo 'Directory not provided. Searching in current directory'
     dir='.'
 else 
-    echo 'Directory is' $1
+    echo 'Input Directory is' $1
     dir=$1
 fi
 
@@ -15,21 +13,25 @@ fi
 path=$(find ~/ -name $dir)
 
 #Make a new file in tmp folder
-touch /tmp/sorted.txt || { echo "Failed to create temp file"; exit 1; }
+touch /tmp/sorted.txt || {
+	 echo "Failed to create temp file";
+	 exit 1;
+	 }
 
-#Empty the sorted folder
-> /tmp/sorted.txt
 
-#Declaration of variables
-OUT="/tmp/sorted.txt"
-SPACE="   ";
-NA="NA";
-NULL="null";
-EMPTY="";
-ZERO="0"; 
+
+#Declaration of readonly constants
+declare -r OUT="/tmp/sorted.txt"
+declare -r NA="N/A";
+declare -r NULL="null";
+declare -r EMPTY="";
+declare -r ZERO="0"; 
+
+#Empty the output file
+> $OUT
 
 #Print the heading first
-printf "%-10s  %-20s  %-20s\n" "RATING" "MOVIE" "TITLE"
+printf "%-10s  %-30s  %-30s\n" "RATING" "MOVIE" "TITLE"
 
 for f in $path/*
   do
@@ -46,15 +48,15 @@ for f in $path/*
      #check if rating is null (if curl fails)
      if [ "$rating" == "$NULL" ] || [ "$rating" == "$EMPTY" ] || [ "$rating" == "$ZERO" ]
      then 
-	printf "%-10s  %-20s  %-20s\n" "$NA" "$movie_name" "$title" >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$NA" "$movie_name" "$title" >> $OUT;
      else 
-	printf "%-10s  %-20s  %-20s\n" "$rating" "$movie_name" "$title" >> $OUT;
+	printf "%-10s  %-30s  %-30s\n" "$rating" "$movie_name" "$title" >> $OUT;
      fi
   done
 
 #Sort the output according to first column 
 sort -k1 -rn $OUT;
 
-#Delete the unwanted file
+#Remove output file
 rm $OUT
 exit 0;
